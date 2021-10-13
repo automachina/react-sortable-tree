@@ -2,7 +2,7 @@
   "name": "@automachina/react-sortable-tree",
   "version": "4.0.0-beta.2",
   "description": "Drag-and-drop sortable component for nested data and hierarchies",
-  "main": "./index.js",
+  "main": "./index.ts",
   "types": "./index.d.ts",
   "exports": {
     "./package.json": "./package.json",
@@ -10,7 +10,7 @@
       "types": "./index.d.ts",
       "module": "./esm/index.js",
       "import": "./esm/index.mjs",
-      "default": "./index.js"
+      "default": "./index.ts"
     }
   },
   "files": [

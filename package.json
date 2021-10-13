@@ -34,7 +34,7 @@
     "publish:alpha": "cd dist && npm publish --tag alpha",
     "publish:beta": "cd dist && npm publish --tag beta",
     "publish:release": "cd dist && npm publish",
-    "postinstall": "npm run build"
+    "postinstall": "npm i && npm run build"
   },
   "engines": {
     "node": ">=14"

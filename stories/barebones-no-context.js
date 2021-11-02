@@ -23,6 +23,7 @@ export default class App extends Component {
           <SortableTree
             treeData={this.state.treeData}
             onChange={(treeData) => this.setState({ treeData })}
+            rowHeight={({ node }) => (node.title === 'Chicken' ? 100 : 50)}
           />
         </DndProvider>
       </div>

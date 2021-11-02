@@ -50,6 +50,7 @@ const mergeTheme = (props) => {
   const overridableDefaults = {
     nodeContentRenderer: NodeRendererDefault,
     placeholderRenderer: PlaceholderRendererDefault,
+    rowHeight: 62,
     scaffoldBlockPxWidth: 44,
     slideRegionSize: 100,
     treeNodeRenderer: TreeNode,
@@ -609,6 +610,7 @@ class ReactSortableTree extends Component {
       style,
       className,
       innerStyle,
+      rowHeight,
       placeholderRenderer,
       getNodeKey,
       rowDirection,
@@ -691,6 +693,17 @@ class ReactSortableTree extends Component {
           itemContent={(index) =>
             this.renderRow(rows[index], {
               listIndex: index,
+              style: {
+                height:
+                  typeof rowHeight !== 'function'
+                    ? rowHeight
+                    : rowHeight({
+                        index,
+                        treeIndex: index,
+                        node: rows[index].node,
+                        path: rows[index].path,
+                      }),
+              },
               getPrevRow: () => rows[index - 1] || null,
               matchKeys,
               swapFrom,
@@ -733,6 +746,11 @@ ReactSortableTree.propTypes = {
 
   // Style applied to the inner, scrollable container (for padding, etc.)
   innerStyle: PropTypes.shape({}),
+
+  // Used by react-virtualized
+  // Either a fixed row height (number) or a function that returns the
+  // height of a row given its index: `({ index: number }): number`
+  rowHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
 
   // Size in px of the region near the edges that initiates scrolling on dragover
   slideRegionSize: PropTypes.number,
@@ -782,6 +800,7 @@ ReactSortableTree.propTypes = {
     innerStyle: PropTypes.shape({}),
     scaffoldBlockPxWidth: PropTypes.number,
     slideRegionSize: PropTypes.number,
+    rowHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
     treeNodeRenderer: PropTypes.func,
     nodeContentRenderer: PropTypes.func,
     placeholderRenderer: PropTypes.func,
@@ -846,6 +865,7 @@ ReactSortableTree.defaultProps = {
   onMoveNode: () => {},
   onVisibilityToggle: () => {},
   placeholderRenderer: null,
+  rowHeight: null,
   scaffoldBlockPxWidth: null,
   searchFinishCallback: null,
   searchFocusOffset: null,

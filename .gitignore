@@ -13,6 +13,7 @@ coverage
 .idea/
 *.DS_Store
 .log
+.storybook
 
 # Build directories (Will be preserved by npm)
 .cache

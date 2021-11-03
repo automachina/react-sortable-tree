@@ -11,19 +11,31 @@ export default class App extends Component {
 
     this.state = {
       treeData: [
-        { title: 'Chicken', expanded: true, children: [{ title: 'Egg' }] },
+        {
+          title: 'Chicken',
+          expanded: true,
+          children: [
+            { title: 'Egg' },
+            { title: 'Egg' },
+            { title: 'Egg' },
+            { title: 'Egg' },
+            { title: 'Egg' },
+            { title: 'Egg' },
+          ],
+        },
       ],
     }
   }
 
   render() {
     return (
-      <div style={{ height: 300 }}>
+      <div style={{ border: 'dashed' }}>
         <DndProvider backend={HTML5Backend}>
           <SortableTree
             treeData={this.state.treeData}
             onChange={(treeData) => this.setState({ treeData })}
             rowHeight={({ node }) => (node.title === 'Chicken' ? 100 : 50)}
+            isVirtualized={false}
           />
         </DndProvider>
       </div>

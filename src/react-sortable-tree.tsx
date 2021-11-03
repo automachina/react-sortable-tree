@@ -76,8 +76,13 @@ class ReactSortableTree extends Component {
 
     this.listRef = React.createRef()
 
-    const { dndType, nodeContentRenderer, treeNodeRenderer, slideRegionSize } =
-      mergeTheme(props)
+    const {
+      dndType,
+      nodeContentRenderer,
+      treeNodeRenderer,
+      isVirtualized,
+      slideRegionSize,
+    } = mergeTheme(props)
 
     this.dndManager = new DndManager(this)
 
@@ -91,15 +96,17 @@ class ReactSortableTree extends Component {
     this.treeNodeRenderer = this.dndManager.wrapTarget(treeNodeRenderer)
 
     // Prepare scroll-on-drag options for this list
-    this.scrollZoneVirtualList = (createScrollingComponent || withScrolling)(
-      React.forwardRef((props, _) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        var { dragDropManager, ...rest } = props
-        return <Virtuoso ref={this.listRef} {...rest} />
-      })
-    )
-    this.vStrength = createVerticalStrength(slideRegionSize)
-    this.hStrength = createHorizontalStrength(slideRegionSize)
+    if (isVirtualized) {
+      this.scrollZoneVirtualList = (createScrollingComponent || withScrolling)(
+        React.forwardRef((props, _) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          var { dragDropManager, ...rest } = props
+          return <Virtuoso ref={this.listRef} {...rest} />
+        })
+      )
+      this.vStrength = createVerticalStrength(slideRegionSize)
+      this.hStrength = createHorizontalStrength(slideRegionSize)
+    }
 
     this.state = {
       draggingTreeData: null,
@@ -611,6 +618,7 @@ class ReactSortableTree extends Component {
       className,
       innerStyle,
       rowHeight,
+      isVirtualized,
       placeholderRenderer,
       getNodeKey,
       rowDirection,
@@ -677,7 +685,7 @@ class ReactSortableTree extends Component {
           <PlaceholderContent />
         </Placeholder>
       )
-    } else {
+    } else if (isVirtualized) {
       containerStyle = { height: '100%', ...containerStyle }
 
       const ScrollZoneVirtualList = this.scrollZoneVirtualList
@@ -712,6 +720,29 @@ class ReactSortableTree extends Component {
             })
           }
         />
+      )
+    } else {
+      // Render list without react-virtualized
+      list = rows.map((row, index) =>
+        this.renderRow(row, {
+          listIndex: index,
+          style: {
+            height:
+              typeof rowHeight !== 'function'
+                ? rowHeight
+                : rowHeight({
+                    index,
+                    treeIndex: index,
+                    node: row.node,
+                    path: row.path,
+                  }),
+          },
+          getPrevRow: () => rows[index - 1] || null,
+          matchKeys,
+          swapFrom,
+          swapDepth: draggedDepth,
+          swapLength,
+        })
       )
     }
 
@@ -781,6 +812,10 @@ ReactSortableTree.propTypes = {
   // Use this for adding buttons via the `buttons` key,
   // or additional `style` / `className` settings.
   generateNodeProps: PropTypes.func,
+
+  // Set to false to disable virtualization.
+  // NOTE: Auto-scrolling while dragging, and scrolling to the `searchFocusOffset` will be disabled.
+  isVirtualized: PropTypes.bool,
 
   treeNodeRenderer: PropTypes.func,
 
@@ -859,6 +894,7 @@ ReactSortableTree.defaultProps = {
   generateNodeProps: null,
   getNodeKey: defaultGetNodeKey,
   innerStyle: {},
+  isVirtualized: true,
   maxDepth: null,
   treeNodeRenderer: null,
   nodeContentRenderer: null,

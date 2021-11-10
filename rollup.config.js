@@ -81,7 +81,7 @@ function createCommonJSConfig(input, output) {
   }
 }
 
-export default function (args) {
+export default function () {
   return [
     createDeclarationConfig('src/index.ts', 'dist'),
     createCommonJSConfig('src/index.ts', 'dist/index.js'),
